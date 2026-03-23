@@ -1,0 +1,22 @@
+node_modules
+.next
+.env
+.env.local
+dist
+build
+*.log
+*.db
+*.db-journal
+data/
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Windows system reserved names
+nul
+con
+prn
+aux
+luminous-ai@1.0.0

@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --surface: #0a0a0a;
+  --surface-hover: #111111;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply font-body selection:bg-white/10;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .glass-card {
+    background: rgba(15, 15, 15, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+  }
+
+  .message-ai {
+    background: transparent;
+  }
+
+  .message-user {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Animation utilities */
+  .animate-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .fade-in {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .slide-in-from-bottom-4 {
+    transform: translateY(1rem);
+  }
+
+  .duration-1000 {
+    animation-duration: 1s;
+  }
+
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .delay-300 {
+    animation-delay: 0.3s;
+  }
+
+  .delay-500 {
+    animation-delay: 0.5s;
+  }
+
+  .delay-700 {
+    animation-delay: 0.7s;
+  }
+
+  .delay-1000 {
+    animation-delay: 1s;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

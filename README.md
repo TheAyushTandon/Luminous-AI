@@ -1,6 +1,25 @@
 # 🌟 Luminous AI - Local Intelligence Workspace
 
-A production-grade, privacy-first AI assistant platform that runs entirely on your local machine. Built with Next.js, React, and powered by Ollama for local LLM inference.
+# 🚀 Luminous AI Desktop - Local First, Privacy Always
+
+Luminous AI is now a **Standalone Desktop Application**. It brings high-performance local AI directly to your workspace with zero-latency orchestrator switching.
+
+### 🍱 The Luminous Desktop Features:
+- **Smart Orchestrator**: Automatically routes between **Mistral** (General/Code) and **Qwen-VL** (High-precision Vision).
+- **Native Audio**: Transcribe and summarize meetings on-the-fly.
+- **Glass-UI**: A modern desktop window built for high-density analysis.
+
+### 🏗️ How to Use:
+1.  **Quick Start**: Double-click **`Luminous.bat`** in this folder. It will automatically check for Ollama and launch the dashboard.
+2.  **App for Friends**: To generate a standalone Windows Installer, run:
+    ```powershell
+    npm run app:build
+    ```
+    Your installer will appear in the `dist/` folder.
+
+### 🛠️ Hardware Requirements:
+*   **Optimal**: 16GB RAM + 8GB VRAM (GPU).
+*   **Minimum**: 8GB RAM (Runs on CPU with slightly slower response times).
 
 ## ✨ Features
 

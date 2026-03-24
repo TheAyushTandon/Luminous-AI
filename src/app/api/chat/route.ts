@@ -56,10 +56,24 @@ export async function POST(request: NextRequest) {
     let domain: 'VISION' | 'GENERAL' | 'AUDIO_ANALYSIS' = 'GENERAL'
 
     if (model === 'Luminous Orchestrator' || !model || model === 'luminous-orchestrator') {
-      const routerResult = await routerService.classifyPrompt(messages[messages.length - 1].content, messages[messages.length - 1].images)
+      const routerResult = await routerService.classifyPrompt(messages)
       finalModel = routerResult.model
       domain = routerResult.domain
       logger.info('⚡ Router Selected:', routerResult)
+      
+      // Vision Stickiness: If we follow up on vision, some models need the image re-injected
+      // if it's missing from the current prompt but exists in history.
+      if (domain === 'VISION') {
+        const lastMsg = messages[messages.length - 1]
+        if (!lastMsg.images || lastMsg.images.length === 0) {
+          // Find most recent images in history
+          const prevImages = [...messages].reverse().find(m => m.images && m.images.length > 0)?.images
+          if (prevImages) {
+            lastMsg.images = prevImages
+            logger.info('👁️ Re-injecting images for Vision follow-up')
+          }
+        }
+      }
     } else {
       finalModel = model
     }
@@ -115,6 +129,7 @@ export async function POST(request: NextRequest) {
           sessionId: session.id,
           role: 'user',
           content: userMessage.content,
+          images: userMessage.images ? JSON.stringify(userMessage.images) : null,
           model: finalModel,
         },
       })
@@ -304,6 +319,14 @@ export async function GET(request: NextRequest) {
         include: {
           messages: {
             orderBy: { createdAt: 'asc' },
+            select: {
+              id: true,
+              role: true,
+              content: true,
+              images: true,
+              model: true,
+              createdAt: true,
+            }
           },
         },
       })
@@ -315,7 +338,16 @@ export async function GET(request: NextRequest) {
         )
       }
 
-      return NextResponse.json({ session })
+      // Parse images for each message
+      const formattedSession = {
+        ...session,
+        messages: session.messages.map(msg => ({
+          ...msg,
+          images: msg.images ? JSON.parse(msg.images) : undefined
+        }))
+      }
+
+      return NextResponse.json({ session: formattedSession })
     }
 
     // Get all sessions

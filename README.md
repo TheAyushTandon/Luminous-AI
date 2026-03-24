@@ -5,7 +5,7 @@
 Luminous AI is now a **Standalone Desktop Application**. It brings high-performance local AI directly to your workspace with zero-latency orchestrator switching.
 
 ### 🍱 The Luminous Desktop Features:
-- **Smart Orchestrator**: Automatically routes between **Mistral** (General/Code) and **Qwen-VL** (High-precision Vision).
+- **Smart Orchestrator**: Automatically routes between **Mistral** (General/Code) and **LLaVA** (Reliable Vision).
 - **Native Audio**: Transcribe and summarize meetings on-the-fly.
 - **Glass-UI**: A modern desktop window built for high-density analysis.
 
@@ -113,32 +113,34 @@ luminous-ai/
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 15+ (App Router)
 - **UI Library**: React 19
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS (Material Design 3 Glassmorphism)
 - **State Management**: Zustand
 - **Animations**: Framer Motion
 - **Language**: TypeScript
 
 ### Backend
 - **Runtime**: Node.js
-- **Framework**: Express
-- **AI Runtime**: Ollama
+- **Framework**: Express 5 (Experimental)
+- **AI Runtime**: Ollama (Upgraded to v0.18.2+)
 - **Database**: SQLite (Prisma ORM)
-- **Vector Store**: FAISS
+- **Vector Store**: FAISS / LangChain
+- **Desktop Wrapper**: Electron
 
 ### AI Models (Local)
 - **Chat**: Llama 3.1 8B Instruct
-- **Code**: Qwen2.5-Coder 7B
-- **Audio**: Whisper Small
+- **Code**: Qwen 2.5-Coder 7B
+- **Vision**: Qwen 2.5-VL (High Precision Multi-modal / OCR)
+- **Audio**: Whisper Small (Integration Pending)
 
 ## 🎨 Design System
 
 The UI follows a modern glassmorphism design with:
-- **Colors**: Material Design 3 color system
-- **Fonts**: Inter (UI), JetBrains Mono (code), Space Mono (accents)
-- **Effects**: Backdrop blur, soft shadows, ambient glows
-- **Theme**: Dark mode optimized
+- **Style**: Material Design 3 glass-inspired interface.
+- **Fonts**: Inter (UI), JetBrains Mono (Code), Space Mono (Accents).
+- **Effects**: Backdrop blur, soft shadows, ambient glows, fluid transitions.
+- **Theme**: Dark mode optimized with high-density analysis layout.
 
 ## 🔧 Configuration
 
@@ -151,6 +153,7 @@ OLLAMA_URL=http://localhost:11434
 # Model Configuration
 DEFAULT_CHAT_MODEL=llama3.1:8b
 DEFAULT_CODE_MODEL=qwen2.5-coder:7b
+DEFAULT_VISION_MODEL=qwen2.5-vl
 DEFAULT_AUDIO_MODEL=whisper:small
 
 # Privacy Mode
@@ -162,32 +165,34 @@ TELEMETRY_ENABLED=false
 
 ### Recommended Models
 
-**For Chat:**
-- `llama3.1:8b` - Best balance of quality and speed
-- `mistral:7b` - Fast and efficient
-- `phi3:mini` - Lightweight option
+**For Chat & General Intelligence:**
+- `llama3.1:8b` - Best balance of quality and speed.
+- `mistral:7b` - Fast and efficient.
 
-**For Code:**
-- `qwen2.5-coder:7b` - Specialized code model
-- `codellama:7b` - Alternative code assistant
+**For Coding & Technical Tasks:**
+- `qwen2.5-coder:7b` - Specialized local code model.
+
+**For Multimodal Analysis (Vision/OCR):**
+- `qwen2.5-vl` - Superior precision for reading text, hex codes, and layouts from images.
 
 **Pull models:**
 ```bash
 ollama pull llama3.1:8b
 ollama pull qwen2.5-coder:7b
+ollama pull qwen2.5-vl
 ```
 
 ## 🚧 Roadmap
 
 - [x] Chat interface with streaming
-- [x] Model management
+- [x] Model management & Switching
 - [x] Desktop & mobile responsive design
-- [ ] Document analysis with RAG
-- [ ] Code editor integration
-- [ ] Audio transcription with Whisper
-- [ ] Agent routing system
-- [ ] Context memory system
-- [ ] Export conversations
+- [x] High-precision Vision integration (Qwen 2.5-VL)
+- [ ] Document analysis with RAG (Improved FAISS/LangChain Workflow)
+- [ ] Audio transcription with Whisper (In Progress)
+- [ ] **RunAnywhere SDK** implementation (Upcoming)
+- [ ] Context memory system / Long-term agent memory
+- [ ] Multi-agent collaborative workflows
 
 ## 🤝 Contributing
 

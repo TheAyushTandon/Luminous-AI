@@ -154,6 +154,7 @@ LOCAL_ONLY=true
 | Chat (small) | phi3:mini | 2.3GB | `ollama pull phi3:mini` |
 | Code | qwen2.5-coder:7b | 4.7GB | `ollama pull qwen2.5-coder:7b` |
 | Audio | whisper:small | 466MB | `ollama pull whisper:small` |
+| Vision | llava:7b | 4.7GB | `ollama pull llava:7b` |
 
 ## Package Scripts
 

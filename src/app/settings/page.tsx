@@ -237,7 +237,7 @@ export default function SettingsPage() {
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      { id: 'qwen2.5vl', name: 'Qwen 2.5-VL', role: 'Dragon Eye (2026)', desc: 'Elite Multi-Model. Best for University IDs, OCR & Documents.' },
+                      { id: 'llava:7b', name: 'LLaVA 7B', role: 'Vision Engine', desc: 'Fast and reliable multi-modal model for image and document analysis.' },
                       { id: 'mistral:instruct', name: 'Mistral 7B', role: 'Logic Specialist', desc: 'World-class text reasoning, code, and logical documentation.' }
                     ].map(rec => (
                       <div key={rec.id} className="p-5 rounded-2xl bg-primary/5 border border-primary/20 flex items-start justify-between group hover:bg-primary/10 transition-all">

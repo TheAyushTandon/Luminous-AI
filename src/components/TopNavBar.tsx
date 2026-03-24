@@ -27,24 +27,34 @@ export default function TopNavBar({ isLocalRunning }: TopNavBarProps) {
       
       <div className="flex items-center gap-2 mr-4">
         <span className="material-symbols-outlined text-[18px] text-primary/70">smart_toy</span>
-        <select 
-          value={selectedModel}
-          onChange={(e) => setSelectedModel(e.target.value)}
-          className="bg-transparent text-xs text-slate-100 outline-none cursor-pointer border-none focus:ring-0 p-0 font-mono tracking-tighter uppercase"
-        >
-          <option value="luminous-orchestrator" className="bg-slate-900 text-primary font-bold">
-            ✨ Luminous Orchestrator
-          </option>
-          {models.length > 0 ? (
-            models.map(model => (
-              <option key={model} value={model} className="bg-slate-900 text-slate-100">
-                {model}
-              </option>
-            ))
-          ) : (
-            <option value="gemma3:4b" className="bg-slate-900 text-slate-100 italic">No models found</option>
-          )}
-        </select>
+        {selectedModel === 'luminous-orchestrator' ? (
+          <div 
+            onClick={() => setSelectedModel(models[0] || '')}
+            className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-all"
+          >
+            <span className="text-xs font-black text-primary font-mono tracking-tighter uppercase">Smart Mode</span>
+            <span className="material-symbols-outlined text-[14px] text-slate-500">expand_more</span>
+          </div>
+        ) : (
+          <select 
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="bg-transparent text-xs text-slate-100 outline-none cursor-pointer border-none focus:ring-0 p-0 font-mono tracking-tighter uppercase"
+          >
+            <option value="luminous-orchestrator" className="bg-slate-900 text-primary font-bold">
+              ✨ Luminous Orchestrator
+            </option>
+            {models.length > 0 ? (
+              models.filter(m => !m.includes('llava')).map(model => (
+                <option key={model} value={model} className="bg-slate-900 text-slate-100">
+                  {model}
+                </option>
+              ))
+            ) : (
+              <option value="gemma3:4b" className="bg-slate-900 text-slate-100 italic">No models found</option>
+            )}
+          </select>
+        )}
       </div>
 
       <div className="h-4 w-px bg-outline-variant/30 hidden md:block"></div>

@@ -60,6 +60,7 @@ export default function SideNavBar() {
 
   const navItems = [
     { id: 'chat', icon: 'chat', label: 'Chat', href: '/chat' },
+    { id: 'vision', icon: 'visibility', label: 'Vision Lab', href: '/vision' },
     { id: 'documents', icon: 'description', label: 'Documents', href: '/documents' },
     { id: 'code', icon: 'code', label: 'Code', href: '/code' },
     { id: 'audio', icon: 'mic', label: 'Audio', href: '/audio' },

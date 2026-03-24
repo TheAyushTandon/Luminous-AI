@@ -2,10 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import TopNavBar from '@/components/TopNavBar'
 import SideNavBar from '@/components/SideNavBar'
-import BottomNavBar from '@/components/BottomNavBar'
 import ChatMessage from '@/components/ChatMessage'
 import ChatInput from '@/components/ChatInput'
 import apiClient from '@/lib/apiClient'
@@ -20,7 +18,7 @@ interface Message {
   routedTo?: string
 }
 
-export default function ChatPage() {
+export default function VisionLabPage() {
   const router = useRouter()
   const [sessionIdFromUrl, setSessionIdFromUrl] = useState<string | null>(null)
   
@@ -51,7 +49,7 @@ export default function ChatPage() {
     setIsVisible(true)
   }, [])
 
-  // Auto-scroll effect: only fire if autoscroll is enabled
+  // Auto-scroll effect
   useEffect(() => {
     if (autoScrollEnabled && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'auto' })
@@ -69,7 +67,7 @@ export default function ChatPage() {
     }
   }
 
-  // Load session turn-by-turn
+  // Load session
   useEffect(() => {
     if (sessionIdFromUrl && sessionIdFromUrl !== currentSessionId) {
       loadSession(sessionIdFromUrl)
@@ -89,7 +87,7 @@ export default function ChatPage() {
       const health = await apiClient.healthCheck()
       setIsLocalRunning(health.ollama)
       if (!health.ollama) {
-        setError('Ollama is not running. Please start Ollama to use the chat.')
+        setError('Ollama is not running. Please start Ollama to use Vision Lab.')
       }
     } catch {
       setIsLocalRunning(false)
@@ -113,33 +111,23 @@ export default function ChatPage() {
       console.error('Error loading session:', error)
       setCurrentSessionId(undefined)
       setMessages([])
-      if (typeof window !== 'undefined') {
-        window.history.replaceState({}, '', '/chat')
-      }
     }
   }
 
   const handleSendMessage = async (content: string) => {
-    const { selectedModel, attachedDocs, clearAttachedDocs } = useChatStore.getState()
-    // Separate images from documents
+    const { attachedDocs, clearAttachedDocs } = useChatStore.getState()
+    
+    // Force Vision Model
+    const VISION_MODEL = 'llava:7b'
+
     const images = attachedDocs
       .filter(doc => doc.type.startsWith('image/'))
-      .map(doc => doc.content.split(',')[1] || doc.content) // Strip prefix
-
-    const documents = attachedDocs.filter(doc => !doc.type.startsWith('image/'))
-
-    // Format attached documents for context injection
-    let documentContext = ''
-    if (documents.length > 0) {
-      documentContext = documents.map(doc => 
-        `### DOCUMENT: ${doc.name}\n${doc.content}\n---`
-      ).join('\n\n')
-    }
+      .map(doc => doc.content.split(',')[1] || doc.content)
 
     const newUserMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: content.trim() || (images.length > 0 ? `Analyzing ${images.length} image(s)...` : `Analyzing ${documents.length} document(s)...`),
+      content: content.trim() || (images.length > 0 ? `Analyzing ${images.length} image(s)...` : `Visual analysis requested.`),
       timestamp: new Date(),
       images: attachedDocs.filter(doc => doc.type.startsWith('image/')).map(doc => doc.content)
     }
@@ -159,28 +147,20 @@ export default function ChatPage() {
 
     const systemPromptMessage = { 
       role: 'system' as const, 
-      content: `### IDENTITY
-You are Luminous AI, a highly-intelligent, all-rounder utility assistant. 
-
-### CONTEXT HANDLING
-- DOCUMENTS: If the user provides "### DOCUMENT" markers, use the information provided to answer.
-- IMAGES: If the user provides images, describe them or answer questions based on their visual content.
-
-### RULES
-1. BE AN ALL-ROUNDER: Never refuse a task.
-2. NATURAL FLOW: Talk directly and intelligently.
-3. ZERO REPETITION: No intro/outro clichés.
-4. INTEGRITY: Be factual for technical topics.` 
+      content: `You are the Vision Specialist. 
+Analyze and describe any provided images or visual data with extreme precision. 
+If no image is explicitly attached to the current message, look at the conversation history to understand what visual context the user is referring to.
+You are running in Luminous Vision Lab.` 
     }
-
-    const finalUserContent = documentContext 
-      ? `[ANALYSIS REQUESTED FOR ATTACHED DOCUMENTS]\n\n${documentContext}\n\nUSER QUESTION: ${content.trim() || 'Please summarize these documents.'}`
-      : content.trim()
 
     const apiMessages = [
       systemPromptMessage,
-      ...messages.map(m => ({ role: (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant' | 'system', content: m.content, images: m.images?.map(img => img.includes('base64,') ? img.split('base64,')[1] : img) })),
-      { role: 'user' as const, content: finalUserContent, images: images.length > 0 ? images : undefined }
+      ...messages.map(m => ({ 
+        role: (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant' | 'system', 
+        content: m.content,
+        images: m.images?.map(img => img.includes('base64,') ? img.split('base64,')[1] : img)
+      })),
+      { role: 'user' as const, content: content.trim(), images: images.length > 0 ? images : undefined }
     ]
 
     clearAttachedDocs()
@@ -189,7 +169,7 @@ You are Luminous AI, a highly-intelligent, all-rounder utility assistant.
       await apiClient.sendMessageStream(
         apiMessages,
         currentSessionId,
-        { model: selectedModel },
+        { model: VISION_MODEL }, // FORCE LLaVA
         (chunk) => {
           setMessages(prev => prev.map(msg => 
             msg.id === assistantMessageId ? { ...msg, content: msg.content + chunk } : msg
@@ -198,7 +178,7 @@ You are Luminous AI, a highly-intelligent, all-rounder utility assistant.
         (newSessionId) => {
           if (!currentSessionId || newSessionId !== currentSessionId) {
             setCurrentSessionId(newSessionId)
-            router.push(`/chat?session=${newSessionId}`, { scroll: false })
+            router.push(`/vision?session=${newSessionId}`, { scroll: false })
             useChatStore.getState().loadSessions()
           }
         },
@@ -229,12 +209,10 @@ You are Luminous AI, a highly-intelligent, all-rounder utility assistant.
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest ${
-                    isLocalRunning ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-red-900/20 text-red-400 border border-red-800/20'
-                  }`}>
-                    {isLocalRunning ? 'System Active' : 'System Offline'}
+                  <span className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    Vision Lab Mode
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono font-bold tracking-[0.2em] uppercase">{useChatStore.getState().selectedModel}</span>
+                  <span className="text-[10px] text-slate-500 font-mono font-bold tracking-[0.2em] uppercase">LLaVA 7B (Locked)</span>
                 </div>
               </div>
 
@@ -247,15 +225,12 @@ You are Luminous AI, a highly-intelligent, all-rounder utility assistant.
               <div className="space-y-12">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center text-center space-y-8 py-20">
-                    <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center animate-pulse">
-                      <span className="material-symbols-outlined text-primary text-4xl">auto_awesome</span>
+                    <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 flex items-center justify-center animate-pulse">
+                      <span className="material-symbols-outlined text-indigo-400 text-4xl">visibility</span>
                     </div>
                     <div>
-                      <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Intelligence Workspace</h2>
-                      <p className="text-slate-500 max-w-md mx-auto">
-                        Your private, local AI instance. For high-precision image or document analysis, visit the 
-                        <Link href="/vision" className="text-primary hover:underline ml-1">Vision Lab</Link>.
-                      </p>
+                      <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Vision Intelligence Lab</h2>
+                      <p className="text-slate-500 max-w-md mx-auto">Upload images, charts, or diagrams. This workspace is hard-wired to the multi-modal specialist for zero-switching reliability.</p>
                     </div>
                   </div>
                 ) : (
